@@ -1,0 +1,15 @@
+#include<LPC214X.h>
+int main()
+{
+VPBDIV=0X01;
+PINSEL0=0X05;
+U0LCR=0X83;
+U0DLM=0X01;
+U0DLL=0X86;
+U0LCR=0X03;
+while(1)
+{
+  U0THR='A';
+  while((U0LSR&0X20)==0X00);
+}
+}
