@@ -1,0 +1,108 @@
+#include<LPC214X.h>
+
+void lcd_init(void);
+void lcd_cmd(unsigned int cmd);
+void lcd_data(unsigned int data);
+void delay(int);
+
+#define RS  (1<<24)		   //p1.24
+#define RW  (1<<23)		   //p1.23
+#define EN  (1<<22)		   //p1.22
+
+#define datalines 0X00003C00	//p0.10 to p0.13
+
+int main()
+{
+ IODIR0=datalines;
+ IOCLR0=datalines;
+ VPBDIV=0X01;
+ lcd_init();
+ lcd_data('s');
+ lcd_data('a');
+ lcd_data('t');
+ lcd_data('e');
+ lcd_data('e');
+ lcd_data('s');
+ lcd_data('h');
+ lcd_data(' ');
+ lcd_data('g');
+ lcd_data('o');
+ lcd_data('o');
+ lcd_data('d');
+}
+
+void lcd_init(void)
+{
+   lcd_cmd(0X28);	    // enable 5x7 mode for chars
+   lcd_cmd(0X01);       //clear  display
+   lcd_cmd(0x02);		//cursor home
+   lcd_cmd(0X06);		//cursor move direction  
+   lcd_cmd(0x0C);		// display on
+   lcd_cmd(0X01);		//clear display
+}
+
+
+void lcd_cmd(unsigned int cmd)
+{
+ unsigned char temp=0;
+ unsigned int temp1=0;
+ IOCLR1= RS;
+ IOCLR1=EN;
+ IOCLR1=RW;
+ temp=cmd;
+ temp= (temp>>4)&0x0F;
+ temp1=(temp<<10)&datalines;
+ IOSET1=EN;
+ IOCLR0=datalines;
+ IOSET0=temp1;
+ delay(1000);
+ IOCLR1=EN;
+ temp=cmd;
+ temp&=0x0F;
+ temp1=(temp<<10)&datalines;
+ IOSET1 = EN; // EN = 1  
+ IOCLR0 = datalines;
+ IOSET0=temp1;
+ delay(1000);
+ IOCLR1=EN;
+}
+
+ 
+
+void lcd_data(unsigned int data)
+{
+unsigned char temp=0;
+ unsigned int temp1=0;
+ IOCLR1= RS;
+ IOCLR1=EN;
+ IOCLR1=RW;
+ temp=data;
+ temp= (temp>>4)&0x0F;
+ temp1=(temp<<10)&datalines;
+ IOSET1=EN;
+ IOSET1=RS;
+ IOCLR0=datalines;
+ IOSET0=temp1;
+ delay(1000);
+ IOCLR1=EN;
+// IOCLR1=RS;
+ temp=data;
+ temp&=0x0F;
+ temp1=(temp<<10)&datalines;
+ IOSET1 = EN; // EN = 1 
+ IOSET1 = RS; 
+ IOCLR0 = datalines;
+ IOSET0=temp1;
+ delay(1000);
+ IOCLR1=EN;
+// IOCLR1 =RS; 
+}
+
+void delay(int count)
+{
+ int i,j;
+ for(j=0;j<count;j++)
+ {
+  for(i=0;i<35;i++);
+ }
+}
