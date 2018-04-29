@@ -1,0 +1,17 @@
+#include<LPC214X.h>
+int main()
+{
+unsigned char x[]="sateesh is a good boy";
+unsigned int i;
+VPBDIV=0X01;
+PINSEL0=0X05;
+U0LCR=0X83;
+U0DLM=0X01;
+U0DLL=0X86;
+U0LCR=0X03;
+for(i=0;x[i]!='\0';i++)
+{
+  U0THR=x[i];
+  while((U0LSR&0X20)==0X00);
+}
+}
